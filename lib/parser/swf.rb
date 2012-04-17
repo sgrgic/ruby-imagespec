@@ -27,26 +27,26 @@ class ImageSpec
         # Our 'signature' is the first 3 bytes
         # Either FWS or CWS.  CWS indicates compression
         signature = contents[0..2]
-        
+
         # Determine the length of the uncompressed stream
         length = contents[4..7].unpack('V').join.to_i
-        
+
         # If we do, in fact, have compression
         if signature == 'CWS'
           # Decompress the body of the SWF
           body = Zlib::Inflate.inflate( contents[8..length] )
-          
+
           # And reconstruct the stream contents to the first 8 bytes (header)
           # Plus our decompressed body
           contents = contents[0..7] + body
         end
 
         # Determine the nbits of our dimensions rectangle
-        nbits = contents.unpack('C' * contents.length)[8] >> 3
+        nbits =contents.unpack('c'*contents.length)[8] >> 3
 
         # Determine how many bits long this entire RECT structure is
         rectbits = 5 + nbits * 4    # 5 bits for nbits, as well as nbits * number of fields (4)
-        
+
         # Determine how many bytes rectbits composes (ceil(rectbits/8))
         rectbytes = (rectbits.to_f / 8).ceil
 

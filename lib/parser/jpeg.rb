@@ -22,11 +22,11 @@ class ImageSpec
 
       def self.dimensions(stream)
         stream.rewind
-        raise 'malformed JPEG' unless stream.getc == 0xFF && stream.getc == 0xD8 # SOI
+        raise 'malformed JPEG' unless stream.getc.ord == 0xFF && stream.getc.ord == 0xD8 # SOI
 
         class << stream
           def readint
-            (readchar << 8) + readchar
+            (readchar.ord << 8) + readchar.ord
           end
 
           def readframe
@@ -34,12 +34,12 @@ class ImageSpec
           end
 
           def readsof
-            [readint, readchar, readint, readint, readchar]
+            [readint, readchar.ord, readint, readint, readchar.ord]
           end
 
           def next
-            c = readchar while c != 0xFF
-            c = readchar while c == 0xFF
+            c = readchar.ord while c != 0xFF
+            c = readchar.ord while c == 0xFF
             c
           end
         end
